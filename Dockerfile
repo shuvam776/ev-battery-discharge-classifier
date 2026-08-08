@@ -24,7 +24,14 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY backend/ backend/
 COPY models/ models/
 
-# Copy environment file template
+# Environment configuration
+ENV PYTHONUTF8=1 \
+    HOST=0.0.0.0 \
+    PORT=8000 \
+    FRONTEND_URL="*" \
+    MODEL_VERSION=1.0.0 \
+    LOG_LEVEL=INFO
+
 COPY .env.example .env
 
 # Expose port
