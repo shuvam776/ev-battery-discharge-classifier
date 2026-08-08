@@ -1,0 +1,23 @@
+# Python / Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# Raw Datasets (Do NOT commit raw heavy downloads)
+data/raw/
+data/processed/
+
+# Reports
+reports/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log

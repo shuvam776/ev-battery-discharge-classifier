@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PunarShakti AI — Modular EV Battery Diagnostic Workbench</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Minimal Stark Monochrome Palette ───────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --panel-bg: #f8f9fa;
+      --border: #e2e8f0;
+      --border-dark: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --mono: 'JetBrains Mono', monospace;
+      --font: 'Inter', sans-serif;
+      --badge-pass: #166534;
+      --badge-pass-bg: #f0fdf4;
+      --badge-warn: #854d0e;
+      --badge-warn-bg: #fefce8;
+      --badge-hold: #991b1b;
+      --badge-hold-bg: #fef2f2;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 14px;
+      padding: 24px;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ─────────────────────────────────────────────────────────── */
+    header {
+      border-bottom: 2px solid var(--text);
+      padding-bottom: 16px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+    }
+
+    .sub-header {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .config-strip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 12px;
+      background: var(--panel-bg);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 4px;
+    }
+
+    .config-strip input {
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 4px 8px;
+      border: 1px solid var(--border-dark);
+      border-radius: 4px;
+      width: 220px;
+    }
+
+    button.btn-sm {
+      background: var(--text);
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    button.btn-sm:hover {
+      background: #334155;
+    }
+
+    /* ── Main Layout: Grid of Modules ──────────────────────────────────── */
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1024px) {
+      .module-grid { grid-template-columns: 1fr; }
+    }
+
+    .module-card {
+      border: 1px solid var(--border-dark);
+      background: #fff;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .module-header {
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--border-dark);
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .module-title {
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .module-body {
+      padding: 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* ── Form Inputs ────────────────────────────────────────────────────── */
+    textarea {
+      width: 100%;
+      height: 240px;
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 10px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      resize: vertical;
+      line-height: 1.4;
+      background: #fafafa;
+    }
+
+    .file-input-zone {
+      border: 1px dashed var(--border-dark);
+      padding: 20px;
+      text-align: center;
+      background: #fafafa;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .file-input-zone input { display: none; }
+    .file-label { font-size: 12px; font-weight: 600; cursor: pointer; }
+    .file-selected { font-family: var(--mono); font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+    /* ── Individual Test Buttons ────────────────────────────────────────── */
+    .btn-test {
+      width: 100%;
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--text);
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: auto;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-test:hover {
+      background: #f1f5f9;
+    }
+
+    /* ── Single Prediction Output Box ──────────────────────────────────── */
+    .test-result-box {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: 12px;
+      font-size: 12px;
+    }
+
+    .result-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-family: var(--mono);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .badge-a { background: #dcfce7; color: #166534; }
+    .badge-b { background: #dbeafe; color: #1e40af; }
+    .badge-c { background: #fef9c3; color: #854d0e; }
+    .badge-scrap { background: #fee2e2; color: #991b1b; }
+    .badge-none { background: #f1f5f9; color: #64748b; }
+
+    .prob-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: var(--mono);
+      font-size: 11px;
+      margin-top: 6px;
+    }
+
+    .prob-table td {
+      padding: 3px 0;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    /* ── Bottom Section: Multimodal Fusion & Final Assessment ─────────── */
+    .fusion-section {
+      border: 2px solid var(--text);
+      border-radius: 6px;
+      padding: 20px;
+      background: var(--panel-bg);
+    }
+
+    .fusion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .btn-fuse {
+      background: var(--text);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 4px;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .btn-fuse:hover { background: #334155; }
+
+    .final-output-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .final-output-grid { grid-template-columns: 1fr; }
+    }
+
+    .verdict-box {
+      border: 1px solid var(--border-dark);
+      background: #fff;
+      padding: 16px;
+      border-radius: 4px;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 6px 12px;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+
+    .status-PASS { background: var(--badge-pass-bg); color: var(--badge-pass); border: 1px solid var(--badge-pass); }
+    .status-PASS_WITH_CAUTION { background: var(--badge-warn-bg); color: var(--badge-warn); border: 1px solid var(--badge-warn); }
+    .status-HOLD_FOR_MANUAL_INSPECTION { background: var(--badge-hold-bg); color: var(--badge-hold); border: 1px solid var(--badge-hold); }
+
+    pre.raw-json-box {
+      background: #0f172a;
+      color: #38bdf8;
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 12px;
+      border-radius: 4px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>PunarShakti Diagnostic Workbench</h1>
+    <div class="sub-header">Modular Multimodal Inspection System · Standalone Branch Verification</div>
+  </div>
+  <div class="config-strip">
+    <label>API URL:</label>
+    <input type="text" id="apiUrl" value="http://localhost:8000" />
+    <button class="btn-sm" onclick="checkHealth()">Ping API</button>
+  </div>
+</header>
+
+<!-- ── Module Grid: Test Each Branch Individually ──────────────────────── -->
+<div class="module-grid">
+
+  <!-- MODULE 1: ELECTRICAL -->
+  <div class="module-card">
+    <div class="module-header">
+      <span class="module-title">1. Electrical Telemetry</span>
+      <span style="font-size:11px;color:var(--text-muted);">Required</span>
+    </div>
+    <div class="module-body">
+      <div style="display:flex;gap:6px;">
+        <button class="btn-sm" style="background:#64748b;" onclick="loadPreset('fresh')">Grade A</button>
+        <button class="btn-sm" style="background:#64748b;" onclick="loadPreset('degraded')">Grade B</button>
+        <button class="btn-sm" style="background:#64748b;" onclick="loadPreset('scrap')">SCRAP</button>
+      </div>
+      <textarea id="batteryJson" spellcheck="false">{
+  "voltage_mean": 3.62,
+  "voltage_std": 0.08,
+  "voltage_min": 3.20,
+  "voltage_max": 4.18,
+  "current_mean": -1.5,
+  "temperature_mean": 29.4,
+  "cycle_number": 120,
+  "energy_wh": 1.72,
+  "Re": 0.045,
+  "Rct": 0.069
+}</textarea>
+      <button class="btn-test" onclick="testElectricalOnly()">Execute Electrical Test Only</button>
+      
+      <div class="test-result-box" id="electricalResultBox">
+        <div style="color:var(--text-muted);">Output: Awaiting test...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 2: THERMAL IMAGE -->
+  <div class="module-card">
+    <div class="module-header">
+      <span class="module-title">2. Thermal Inspection</span>
+      <span style="font-size:11px;color:var(--text-muted);">Optional</span>
+    </div>
+    <div class="module-body">
+      <div class="file-input-zone" onclick="document.getElementById('thermalFile').click()">
+        <input type="file" id="thermalFile" accept="image/*" onchange="updateFileName('thermal')" />
+        <div class="file-label">📷 Select Thermal Image</div>
+        <div class="file-selected" id="thermalFileName">No file selected</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.4;">
+        Analyzes thermal surface heat pattern for battery health grade (A, B, C, SCRAP).
+      </div>
+      <button class="btn-test" onclick="testThermalOnly()">Execute Thermal Test Only</button>
+
+      <div class="test-result-box" id="thermalResultBox">
+        <div style="color:var(--text-muted);">Output: Awaiting test...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 3: X-RAY IMAGE -->
+  <div class="module-card">
+    <div class="module-header">
+      <span class="module-title">3. Structural X-Ray</span>
+      <span style="font-size:11px;color:var(--badge-pass);font-weight:700;">Trained ResNet-18</span>
+    </div>
+    <div class="module-body">
+      <div class="file-input-zone" onclick="document.getElementById('xrayFile').click()">
+        <input type="file" id="xrayFile" accept="image/*" onchange="updateFileName('xray')" />
+        <div class="file-label">🔬 Select X-Ray Image</div>
+        <div class="file-selected" id="xrayFileName">No file selected</div>
+      </div>
+      <div style="font-size:11px;color:var(--text-muted);line-height:1.4;">
+        Analyzes internal mechanical structure for battery health grade (A, B, C, SCRAP).
+      </div>
+      <button class="btn-test" onclick="testXrayOnly()">Execute X-Ray Test Only</button>
+
+      <div class="test-result-box" id="xrayResultBox">
+        <div style="color:var(--text-muted);">Output: Awaiting test...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── Bottom Section: Multimodal Fusion ───────────────────────────────── -->
+<div class="fusion-section">
+  <div class="fusion-header">
+    <div>
+      <h2 style="font-size:16px;font-weight:700;text-transform:uppercase;">Combined Multimodal Safety Fusion</h2>
+      <div style="font-size:12px;color:var(--text-muted);">Combines all available inputs through the conservative rule-based safety gate.</div>
+    </div>
+    <button class="btn-fuse" onclick="runFullMultimodalFusion()">Run Full Multimodal Assessment</button>
+  </div>
+
+  <div class="final-output-grid">
+    <div class="verdict-box" id="finalVerdictBox">
+      <div style="color:var(--text-muted);font-size:13px;">Click "Run Full Multimodal Assessment" to compute final safety decision.</div>
+    </div>
+
+    <div>
+      <div style="font-size:11px;font-weight:700;margin-bottom:4px;text-transform:uppercase;">Raw JSON Payload:</div>
+      <pre class="raw-json-box" id="rawJsonBox">// Response payload will appear here</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+const PRESETS = {
+  fresh: { voltage_mean: 3.78, voltage_std: 0.06, voltage_min: 3.60, voltage_max: 4.18, current_mean: -1.2, temperature_mean: 26.5, cycle_number: 15, energy_wh: 1.85, Re: 0.042, Rct: 0.062 },
+  degraded: { voltage_mean: 3.52, voltage_std: 0.12, voltage_min: 3.10, voltage_max: 4.05, current_mean: -1.4, temperature_mean: 33.5, cycle_number: 450, energy_wh: 1.42, Re: 0.095, Rct: 0.130 },
+  scrap: { voltage_mean: 3.18, voltage_std: 0.22, voltage_min: 2.75, voltage_max: 3.80, current_mean: -0.9, temperature_mean: 41.0, cycle_number: 890, energy_wh: 0.78, Re: 0.180, Rct: 0.240 }
+};
+
+function getApiUrl() {
+  return document.getElementById('apiUrl').value.trim();
+}
+
+function loadPreset(key) {
+  document.getElementById('batteryJson').value = JSON.stringify(PRESETS[key], null, 2);
+}
+
+function updateFileName(type) {
+  const file = document.getElementById(type + 'File').files[0];
+  document.getElementById(type + 'FileName').textContent = file ? file.name : 'No file selected';
+}
+
+async function checkHealth() {
+  try {
+    const res = await fetch(getApiUrl() + '/health');
+    const data = await res.json();
+    alert('API Status: ' + data.status + '\nElectrical Loaded: ' + data.electrical_model_loaded + '\nThermal Loaded: ' + data.thermal_model_loaded);
+  } catch(e) {
+    alert('Failed to connect to API at ' + getApiUrl());
+  }
+}
+
+// ── 1. Electrical Only Test ──────────────────────────────────────────────
+async function testElectricalOnly() {
+  const box = document.getElementById('electricalResultBox');
+  box.innerHTML = 'Testing...';
+  try {
+    const batteryData = JSON.parse(document.getElementById('batteryJson').value);
+
+    const res = await fetch(getApiUrl() + '/analyze/electrical', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(batteryData)
+    });
+    const data = await res.json();
+
+    const el = data.electrical;
+    box.innerHTML = `
+      <div><strong>Predicted Grade:</strong> <span class="result-badge badge-${el.grade.toLowerCase()}">GRADE ${el.grade}</span></div>
+      <div><strong>Confidence:</strong> ${(el.confidence * 100).toFixed(1)}%</div>
+      <table class="prob-table">
+        <tr><td>Grade A:</td><td>${((el.probabilities.A||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>Grade B:</td><td>${((el.probabilities.B||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>Grade C:</td><td>${((el.probabilities.C||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>SCRAP:</td><td>${((el.probabilities.SCRAP||0)*100).toFixed(1)}%</td></tr>
+      </table>
+    `;
+  } catch(e) {
+    box.innerHTML = '<span style="color:red;">Error: ' + e.message + '</span>';
+  }
+}
+
+// ── 2. Thermal Only Test ─────────────────────────────────────────────────
+async function testThermalOnly() {
+  const box = document.getElementById('thermalResultBox');
+  const file = document.getElementById('thermalFile').files[0];
+  if (!file) {
+    box.innerHTML = '<span style="color:orange;">Please select a thermal image file first.</span>';
+    return;
+  }
+  box.innerHTML = 'Analyzing Thermal Scan...';
+  try {
+    const form = new FormData();
+    form.append('image', file);
+
+    const res = await fetch(getApiUrl() + '/analyze/thermal', { method: 'POST', body: form });
+    const data = await res.json();
+    const th = data.thermal;
+
+    const g = th.grade ? th.grade.toLowerCase() : 'none';
+    box.innerHTML = `
+      <div><strong>Thermal Grade:</strong> <span class="result-badge badge-${g}">GRADE ${th.grade || 'NONE'}</span></div>
+      <div><strong>Confidence:</strong> ${th.confidence ? (th.confidence * 100).toFixed(1) + '%' : 'N/A'}</div>
+      <table class="prob-table">
+        <tr><td>Grade A:</td><td>${((th.probabilities?.A||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>Grade B:</td><td>${((th.probabilities?.B||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>Grade C:</td><td>${((th.probabilities?.C||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>SCRAP:</td><td>${((th.probabilities?.SCRAP||0)*100).toFixed(1)}%</td></tr>
+      </table>
+    `;
+  } catch(e) {
+    box.innerHTML = '<span style="color:red;">Error: ' + e.message + '</span>';
+  }
+}
+
+// ── 3. X-Ray Only Test ───────────────────────────────────────────────────
+async function testXrayOnly() {
+  const box = document.getElementById('xrayResultBox');
+  const file = document.getElementById('xrayFile').files[0];
+  if (!file) {
+    box.innerHTML = '<span style="color:orange;">Please select an X-Ray scan image first.</span>';
+    return;
+  }
+  box.innerHTML = 'Analyzing Structural X-Ray...';
+  try {
+    const form = new FormData();
+    form.append('image', file);
+
+    const res = await fetch(getApiUrl() + '/analyze/xray', { method: 'POST', body: form });
+    const data = await res.json();
+    const xr = data.xray;
+
+    const g = xr.grade ? xr.grade.toLowerCase() : 'none';
+    box.innerHTML = `
+      <div><strong>Structural Grade:</strong> <span class="result-badge badge-${g}">GRADE ${xr.grade || 'NONE'}</span></div>
+      <div><strong>Confidence:</strong> ${xr.confidence ? (xr.confidence * 100).toFixed(1) + '%' : 'N/A'}</div>
+      <table class="prob-table">
+        <tr><td>Grade A:</td><td>${((xr.probabilities?.A||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>Grade B:</td><td>${((xr.probabilities?.B||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>Grade C:</td><td>${((xr.probabilities?.C||0)*100).toFixed(1)}%</td></tr>
+        <tr><td>SCRAP:</td><td>${((xr.probabilities?.SCRAP||0)*100).toFixed(1)}%</td></tr>
+      </table>
+    `;
+  } catch(e) {
+    box.innerHTML = '<span style="color:red;">Error: ' + e.message + '</span>';
+  }
+}
+
+// ── 4. Full Multimodal Assessment ────────────────────────────────────────
+async function runFullMultimodalFusion() {
+  const verdictBox = document.getElementById('finalVerdictBox');
+  const jsonBox = document.getElementById('rawJsonBox');
+  verdictBox.innerHTML = 'Executing Multimodal Fusion...';
+  
+  try {
+    const batteryData = JSON.parse(document.getElementById('batteryJson').value);
+    const form = new FormData();
+    form.append('battery_data', JSON.stringify(batteryData));
+
+    const thermalFile = document.getElementById('thermalFile').files[0];
+    const xrayFile = document.getElementById('xrayFile').files[0];
+    if (thermalFile) form.append('thermal_image', thermalFile);
+    if (xrayFile) form.append('xray_image', xrayFile);
+
+    const res = await fetch(getApiUrl() + '/analyze', { method: 'POST', body: form });
+    const data = await res.json();
+
+    jsonBox.textContent = JSON.stringify(data, null, 2);
+
+    const f = data.final;
+    verdictBox.innerHTML = `
+      <div><span class="status-pill status-${f.decision}">${f.decision}</span></div>
+      <div style="font-size:16px;font-weight:700;margin-top:6px;">FINAL GRADE: ${f.grade}</div>
+      <div style="font-size:13px;color:var(--text-muted);margin-top:2px;"><strong>Application:</strong> ${f.recommended_application}</div>
+      <div style="font-size:11px;color:var(--text-muted);margin-top:8px;font-style:italic;">${f.disclaimer}</div>
+    `;
+  } catch(e) {
+    verdictBox.innerHTML = '<span style="color:red;">Fusion Error: ' + e.message + '</span>';
+  }
+}
+</script>
+</body>
+</html>

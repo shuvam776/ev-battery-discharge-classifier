@@ -1,0 +1,10 @@
+{
+  "available": false,
+  "reason": "No labeled battery X-ray dataset available for V1",
+  "architecture": "ResNet-18 (pluggable)",
+  "classes": [
+    "NORMAL",
+    "SUSPICIOUS"
+  ],
+  "enable_instructions": "See scripts/train_xray.py for dataset format"
+}

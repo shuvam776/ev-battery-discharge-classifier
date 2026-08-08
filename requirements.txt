@@ -1,0 +1,38 @@
+# PunarShakti AI — Requirements
+# Python 3.11+
+
+# --- Web Framework ---
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+
+# --- Data Validation ---
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# --- Numerical & Data ---
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.13.1
+
+# --- ML ---
+scikit-learn==1.5.2
+xgboost==2.1.1
+joblib==1.4.2
+
+# --- Deep Learning ---
+torch==2.4.1
+torchvision==0.19.1
+
+# --- Image Processing ---
+Pillow==10.4.0
+opencv-python-headless==4.10.0.84
+
+# --- Visualization & Reporting ---
+matplotlib==3.9.2
+seaborn==0.13.2
+
+# --- Utilities ---
+python-dotenv==1.0.1
+requests==2.32.3
+tqdm==4.66.5

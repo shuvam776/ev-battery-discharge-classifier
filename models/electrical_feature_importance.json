@@ -1,0 +1,82 @@
+[
+  {
+    "feature": "energy_wh",
+    "importance": 0.1667459384561997
+  },
+  {
+    "feature": "current_mean",
+    "importance": 0.12237166376691318
+  },
+  {
+    "feature": "Re",
+    "importance": 0.09114340056934422
+  },
+  {
+    "feature": "temperature_max",
+    "importance": 0.08292150089768383
+  },
+  {
+    "feature": "temperature_mean",
+    "importance": 0.06906951273322155
+  },
+  {
+    "feature": "temperature_range",
+    "importance": 0.06385494592729855
+  },
+  {
+    "feature": "temperature_std",
+    "importance": 0.06136025999782395
+  },
+  {
+    "feature": "cycle_duration",
+    "importance": 0.05526347807452235
+  },
+  {
+    "feature": "Rct",
+    "importance": 0.047046018185899915
+  },
+  {
+    "feature": "cycle_number",
+    "importance": 0.04496961635876102
+  },
+  {
+    "feature": "voltage_mean",
+    "importance": 0.041907691731820476
+  },
+  {
+    "feature": "current_std",
+    "importance": 0.04139573454011156
+  },
+  {
+    "feature": "current_range",
+    "importance": 0.022585088517621723
+  },
+  {
+    "feature": "current_min",
+    "importance": 0.02216659410382228
+  },
+  {
+    "feature": "voltage_std",
+    "importance": 0.01985036363634645
+  },
+  {
+    "feature": "voltage_range",
+    "importance": 0.012633489271255563
+  },
+  {
+    "feature": "voltage_min",
+    "importance": 0.011529623688062936
+  },
+  {
+    "feature": "voltage_max",
+    "importance": 0.010738828678504744
+  },
+  {
+    "feature": "temperature_min",
+    "importance": 0.008730127052634555
+  },
+  {
+    "feature": "current_max",
+    "importance": 0.0037161238121514854
+  }
+]

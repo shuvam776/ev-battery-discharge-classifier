@@ -1,0 +1,33 @@
+{
+  "feature_names": [
+    "voltage_mean",
+    "voltage_std",
+    "voltage_min",
+    "voltage_max",
+    "voltage_range",
+    "current_mean",
+    "current_std",
+    "current_min",
+    "current_max",
+    "current_range",
+    "temperature_mean",
+    "temperature_std",
+    "temperature_min",
+    "temperature_max",
+    "temperature_range",
+    "cycle_duration",
+    "energy_wh",
+    "cycle_number",
+    "Re",
+    "Rct"
+  ],
+  "grade_labels": [
+    "A",
+    "B",
+    "C",
+    "SCRAP"
+  ],
+  "winning_model": "RandomForest",
+  "macro_f1": 0.6924854388922925,
+  "accuracy": 0.8717948717948718
+}
